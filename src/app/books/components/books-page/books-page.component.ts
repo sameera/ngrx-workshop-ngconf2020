@@ -5,33 +5,38 @@ import {
   State,
   selectAllBooks,
   selectActiveBook,
-  selectBooksEarningsTotals
+  selectBooksEarningsTotals,
 } from "src/app/shared/state";
 import { BookModel, BookRequiredProps } from "src/app/shared/models";
-import { BooksPageActions } from "../../actions";
+import { BooksEventTypes } from "../../actions";
+import { EventStore } from "src/app/event-store/store";
+
+const BOOKS_PAGE = "Books Page";
 
 @Component({
   selector: "app-books",
   templateUrl: "./books-page.component.html",
-  styleUrls: ["./books-page.component.css"]
+  styleUrls: ["./books-page.component.css"],
 })
 export class BooksPageComponent implements OnInit {
   books$: Observable<BookModel[]>;
   currentBook$: Observable<BookModel | null>;
   total$: Observable<number>;
 
-  constructor(private store: Store<State>) {
+  constructor(private store: EventStore<State>) {
     this.books$ = store.select(selectAllBooks);
     this.currentBook$ = store.select(selectActiveBook);
     this.total$ = store.select(selectBooksEarningsTotals);
   }
 
   ngOnInit() {
-    this.store.dispatch(BooksPageActions.enter());
+    this.store.dispatch(BOOKS_PAGE, BooksEventTypes.enter);
   }
 
   onSelect(book: BookModel) {
-    this.store.dispatch(BooksPageActions.selectBook({ bookId: book.id }));
+    this.store.dispatch(BOOKS_PAGE, BooksEventTypes.selectBook, {
+      bookId: book.id,
+    });
   }
 
   onCancel() {
@@ -39,7 +44,7 @@ export class BooksPageComponent implements OnInit {
   }
 
   removeSelectedBook() {
-    this.store.dispatch(BooksPageActions.clearSelectedBook());
+    this.store.dispatch(BOOKS_PAGE, BooksEventTypes.clearSelectedBook);
   }
 
   onSave(book: BookRequiredProps | BookModel) {
@@ -51,16 +56,21 @@ export class BooksPageComponent implements OnInit {
   }
 
   saveBook(bookProps: BookRequiredProps) {
-    this.store.dispatch(BooksPageActions.createBook({ book: bookProps }));
+    this.store.dispatch(BOOKS_PAGE, BooksEventTypes.createBook, {
+      book: bookProps,
+    });
   }
 
   updateBook(book: BookModel) {
-    this.store.dispatch(
-      BooksPageActions.updateBook({ bookId: book.id, changes: book })
-    );
+    this.store.dispatch(BOOKS_PAGE, BooksEventTypes.updateBook, {
+      bookId: book.id,
+      changes: book,
+    });
   }
 
   onDelete(book: BookModel) {
-    this.store.dispatch(BooksPageActions.deleteBook({ bookId: book.id }));
+    this.store.dispatch(BOOKS_PAGE, BooksEventTypes.deleteBook, {
+      bookId: book.id,
+    });
   }
 }

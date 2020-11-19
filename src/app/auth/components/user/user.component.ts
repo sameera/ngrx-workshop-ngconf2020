@@ -3,12 +3,12 @@ import { Observable } from "rxjs";
 import { UserModel } from "src/app/shared/models";
 import { Store } from "@ngrx/store";
 import { State, selectAuthUser } from "src/app/shared/state";
-import { AuthUserActions } from "../../actions";
+import { AuthEvents } from "../../actions";
 
 @Component({
   selector: "app-user",
   templateUrl: "./user.component.html",
-  styleUrls: ["./user.component.css"]
+  styleUrls: ["./user.component.css"],
 })
 export class UserComponent {
   user$: Observable<UserModel | null>;
@@ -18,6 +18,6 @@ export class UserComponent {
   }
 
   onLogout() {
-    this.store.dispatch(AuthUserActions.logout());
+    this.store.dispatch(AuthEvents.logout("User Component"));
   }
 }

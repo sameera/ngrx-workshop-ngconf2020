@@ -2,18 +2,19 @@ import { ActionReducerMap, createSelector, MetaReducer } from "@ngrx/store";
 import * as fromAuth from "./auth.reducer";
 import * as fromBooks from "./books.reducer";
 import { logoutMetareducer } from "./logout.metareducer";
+import { Event } from "src/app/event-store";
 
 export interface State {
   auth: fromAuth.State;
   books: fromBooks.State;
 }
 
-export const reducers: ActionReducerMap<State> = {
+export const reducers: ActionReducerMap<State, Event> = {
   auth: fromAuth.reducer,
-  books: fromBooks.reducer
+  books: fromBooks.reducer,
 };
 
-export const metaReducers: MetaReducer<State>[] = [logoutMetareducer];
+export const metaReducers: MetaReducer<State, Event>[] = [logoutMetareducer];
 
 /**
  * Auth Selectors

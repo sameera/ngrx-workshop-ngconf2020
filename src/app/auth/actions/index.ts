@@ -1,4 +1,4 @@
-import * as AuthApiActions from "./auth-api.actions";
-import * as AuthUserActions from "./auth-user.actions";
+export * from "./event-types";
+import * as AuthEvents from "./auth-events";
 
-export { AuthApiActions, AuthUserActions };
+export { AuthEvents };

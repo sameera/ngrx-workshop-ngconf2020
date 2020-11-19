@@ -1,6 +1,6 @@
 import { UserModel } from "../models";
-import { createReducer, on, Action } from "@ngrx/store";
-import { AuthApiActions, AuthUserActions } from "src/app/auth/actions";
+import { AuthApiEventTypes, AuthEventTypes } from "src/app/auth/actions";
+import { createEventReducer, when, Event } from "src/app/event-store";
 
 export interface State {
   gettingStatus: boolean;
@@ -11,50 +11,50 @@ export interface State {
 const initialState: State = {
   gettingStatus: true,
   user: null,
-  error: null
+  error: null,
 };
 
-export const authReducer = createReducer(
+export const authReducer = createEventReducer(
   initialState,
-  on(AuthUserActions.logout, (state, action) => {
+  when(AuthEventTypes.logout, (state) => {
     return {
       gettingStatus: false,
       user: null,
-      error: null
+      error: null,
     };
   }),
-  on(AuthUserActions.login, (state, action) => {
+  when(AuthEventTypes.login, (state) => {
     return {
       gettingStatus: true,
       user: null,
-      error: null
+      error: null,
     };
   }),
-  on(AuthApiActions.getAuthStatusSuccess, (state, action) => {
+  when(AuthApiEventTypes.authStatusSuccess, (state, action) => {
     return {
       gettingStatus: false,
       user: action.user,
-      error: null
+      error: null,
     };
   }),
-  on(AuthApiActions.loginSuccess, (state, action) => {
+  when(AuthApiEventTypes.loginSuccess, (state, action) => {
     return {
       gettingStatus: false,
       user: action.user,
-      error: null
+      error: null,
     };
   }),
-  on(AuthApiActions.loginFailure, (state, action) => {
+  when(AuthApiEventTypes.loginFailure, (state, action) => {
     return {
       gettingStatus: false,
       user: null,
-      error: action.reason
+      error: action.reason,
     };
   })
 );
 
-export function reducer(state: State | undefined, action: Action) {
-  return authReducer(state, action);
+export function reducer(state: State | undefined, event: Event) {
+  return authReducer(state, event);
 }
 
 export const selectGettingStatus = (state: State) => state.gettingStatus;

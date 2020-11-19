@@ -1,7 +1,8 @@
-import { createReducer, on, Action, createSelector } from "@ngrx/store";
+import { createSelector } from "@ngrx/store";
 import { createEntityAdapter, EntityState } from "@ngrx/entity";
 import { BookModel, calculateBooksGrossEarnings } from "src/app/shared/models";
-import { BooksPageActions, BooksApiActions } from "src/app/books/actions";
+import { BooksEventTypes, BooksApiEventTypes } from "src/app/books/actions";
+import { createEventReducer, when, Event } from "src/app/event-store";
 
 export interface State extends EntityState<BookModel> {
   activeBookId: string | null;
@@ -9,48 +10,51 @@ export interface State extends EntityState<BookModel> {
 
 export const adapter = createEntityAdapter<BookModel>();
 
-export const initialState: State = adapter.getInitialState({
-  activeBookId: null
-});
+export const initialState = adapter.getInitialState({
+  activeBookId: null,
+}) as State;
 
-export const booksReducer = createReducer(
+export const booksReducer = createEventReducer(
   initialState,
-  on(BooksPageActions.clearSelectedBook, BooksPageActions.enter, state => {
+  when(BooksEventTypes.selectBook, (state, action) => {
     return {
       ...state,
-      activeBookId: null
-    };
+      activeBookId: action.bookId,
+    } as State;
   }),
-  on(BooksPageActions.selectBook, (state, action) => {
+  when([BooksEventTypes.clearSelectedBook, BooksEventTypes.enter], (state) => {
     return {
       ...state,
-      activeBookId: action.bookId
-    };
+      activeBookId: null,
+    } as State;
   }),
-  on(BooksApiActions.booksLoaded, (state, action) => {
-    return adapter.addAll(action.books, state);
+  when(BooksApiEventTypes.booksLoadedSuccess, (state, action) => {
+    return adapter.addAll(
+      action.books,
+      state as EntityState<BookModel>
+    ) as State;
   }),
-  on(BooksApiActions.bookCreated, (state, action) => {
+  when(BooksApiEventTypes.bookCreated, (state, action) => {
     return adapter.addOne(action.book, {
       ...state,
-      activeBookId: null
-    });
+      activeBookId: null,
+    } as State);
   }),
-  on(BooksApiActions.bookUpdated, (state, action) => {
-    return adapter.updateOne(
-      { id: action.book.id, changes: action.book },
-      {
-        ...state,
-        activeBookId: null
-      }
-    );
+  when(BooksApiEventTypes.bookUpdated, (state, action) => {
+    return adapter.updateOne({ id: action.book.id, changes: action.book }, {
+      ...state,
+      activeBookId: null,
+    } as State) as State;
   }),
-  on(BooksApiActions.bookDeleted, (state, action) => {
-    return adapter.removeOne(action.bookId, state);
+  when(BooksApiEventTypes.bookDeleted, (state, action) => {
+    return adapter.removeOne(
+      action.bookId,
+      state as EntityState<BookModel>
+    ) as State;
   })
 );
 
-export function reducer(state: State | undefined, action: Action) {
+export function reducer(state: State | undefined, action: Event) {
   return booksReducer(state, action);
 }
 

@@ -17,6 +17,12 @@
       "name": "The Hobbit",
       "earnings": "100000000",
       "description": null
+    },
+    {
+      "id": "bfd0da09-feca-4d26-b78e-8e4112246e21",
+      "name": "My Book",
+      "earnings": "10023",
+      "description": "The book of mine"
     }
   ]
 }

@@ -5,16 +5,16 @@ import {
   State,
   selectGettingAuthStatus,
   selectAuthUser,
-  selectAuthError
+  selectAuthError,
 } from "src/app/shared/state";
 import { UserModel } from "src/app/shared/models";
-import { AuthUserActions } from "../../actions";
+import { AuthEventTypes, AuthEvents } from "../../actions";
 import { LoginEvent } from "../login-form";
 
 @Component({
   selector: "app-login-page",
   templateUrl: "./login-page.component.html",
-  styleUrls: ["./login-page.component.css"]
+  styleUrls: ["./login-page.component.css"],
 })
 export class LoginPageComponent {
   gettingStatus$: Observable<boolean>;
@@ -29,7 +29,10 @@ export class LoginPageComponent {
 
   onLogin($event: LoginEvent) {
     this.store.dispatch(
-      AuthUserActions.login($event.username, $event.password)
+      AuthEvents.login("Login Page", {
+        username: $event.username,
+        password: $event.password,
+      })
     );
   }
 }
