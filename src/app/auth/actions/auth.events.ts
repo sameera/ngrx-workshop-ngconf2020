@@ -1,5 +1,5 @@
 import { args, prepareEvent } from "src/app/event-store";
-import { AuthEventTypes } from "./event-types";
+import { AuthEventTypes } from "./event.types";
 
 export const login = prepareEvent(
   AuthEventTypes.login,

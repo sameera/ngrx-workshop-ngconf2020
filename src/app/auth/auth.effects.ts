@@ -4,7 +4,7 @@ import { of } from "rxjs";
 import { map, concatMap, catchError, tap } from "rxjs/operators";
 import { args, onEvent, Event, createEvent } from "../event-store";
 import { AuthService } from "../shared/services/auth.service";
-import { AuthApiEventTypes, AuthEventTypes } from "./actions";
+import { AuthApiEventTypes, AuthEvents } from "./actions";
 import { UserModel } from "src/app/shared/models";
 
 const AUTH_API = "Auth API";
@@ -34,16 +34,16 @@ export class AuthEffects {
   getAuthStatus$ = createEffect(() =>
     this.auth
       .getStatus()
-      .pipe(map((userOrNull) => getAuthStatusSuccess({ user: userOrNull })))
+      .pipe(map(userOrNull => getAuthStatusSuccess({ user: userOrNull })))
   );
 
   login$ = createEffect(() =>
     this.actions$.pipe(
-      onEvent(AuthEventTypes.login),
+      onEvent(AuthEvents.login),
       concatMap((action: Event) => {
         return this.auth.login(action.username, action.password).pipe(
-          map((user) => loginSuccess({ user })),
-          catchError((reason) => of(loginFailure({ reason })))
+          map(user => loginSuccess({ user })),
+          catchError(reason => of(loginFailure({ reason })))
         );
       })
     )
@@ -52,7 +52,7 @@ export class AuthEffects {
   logout$ = createEffect(
     () =>
       this.actions$.pipe(
-        onEvent(AuthEventTypes.logout),
+        onEvent(AuthEvents.logout),
         tap(() => this.auth.logout())
       ),
     { dispatch: false }

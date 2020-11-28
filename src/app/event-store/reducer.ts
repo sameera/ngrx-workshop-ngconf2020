@@ -1,32 +1,62 @@
 import { ActionReducer } from "@ngrx/store";
+
 import { Event } from "./event";
+import { EventAssembler, VerbedEvent } from "./event-creators";
 
 export type EventReducer<StateType> = (
   state: StateType,
   event: Event
 ) => StateType;
 
-export interface When<StateType> {
-  reducer: ActionReducer<StateType, Event>;
+export interface When<StateType, EventType extends Event = Event> {
+  reducer: ActionReducer<StateType, EventType>;
   verbs: string[];
 }
 
-export function when<StateType>(
-  verbs: string[],
-  reducer: ActionReducer<StateType, Event>
-): When<StateType>;
-export function when<StateType>(
+export function when<StateType, EventType extends Event = Event>(
   verb: string,
-  reducer: ActionReducer<StateType, Event>
-): When<StateType>;
-export function when<StateType>(
-  verbs: string | string[],
-  reducer: ActionReducer<StateType, Event>
-): When<StateType> {
+  reducer: ActionReducer<StateType, EventType>
+): When<StateType, EventType>;
+export function when<StateType, ArgsType, EventType extends Event = Event>(
+  event: EventAssembler<ArgsType>,
+  reducer: ActionReducer<StateType, EventType>
+): When<StateType, EventType>;
+export function when<StateType, ArgsType, EventType extends Event = Event>(
+  event: (string | EventAssembler<ArgsType>)[],
+  reducer: ActionReducer<StateType, EventType>
+): When<StateType, EventType>;
+export function when<StateType, ArgsType, EventType extends Event = Event>(
+  verbOrPreparedEvent:
+    | string
+    | EventAssembler<ArgsType>
+    | (string | EventAssembler<ArgsType>)[],
+  // prettier-ignore
+  reducer: ActionReducer<StateType, Event> | ActionReducer<StateType, EventType>
+): When<StateType, EventType> {
+  const verbs = getVerbs(verbOrPreparedEvent);
   return {
     reducer,
-    verbs: Array.isArray(verbs) ? verbs : [verbs],
+    verbs,
   };
+}
+
+function getVerbs<ArgsType>(
+  param:
+    | string
+    | EventAssembler<ArgsType>
+    | (string | EventAssembler<ArgsType>)[]
+): string[] {
+  if (typeof param === "string") return [param];
+  if (((param as unknown) as VerbedEvent).verb)
+    return [((param as unknown) as VerbedEvent).verb];
+
+  if (Array.isArray(param)) {
+    return param.map((p: string | EventAssembler<ArgsType>) =>
+      typeof p === "string" ? p : ((p as unknown) as VerbedEvent).verb
+    );
+  }
+
+  throw new Error("Incompatible event type");
 }
 
 export function createEventReducer<StateType>(

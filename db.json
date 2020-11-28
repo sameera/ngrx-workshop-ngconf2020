@@ -23,6 +23,12 @@
       "name": "My Book",
       "earnings": "10023",
       "description": "The book of mine"
+    },
+    {
+      "id": "e82e0081-8b75-4316-bfeb-b10e2d7f59e6",
+      "name": "Another book",
+      "earnings": "234252",
+      "description": "Blah book"
     }
   ]
 }

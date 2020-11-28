@@ -22,7 +22,9 @@ export const booksReducer = createEventReducer(
       activeBookId: action.bookId,
     } as State;
   }),
-  when([BooksEventTypes.clearSelectedBook, BooksEventTypes.enter], (state) => {
+  // Note: This could have been merged in to one by writin up our createEventReducer to support multiple
+  // event params to match the original ngrx style. I was lazy and implemented it to take an array
+  when([BooksEventTypes.clearSelectedBook, BooksEventTypes.enter], state => {
     return {
       ...state,
       activeBookId: null,
