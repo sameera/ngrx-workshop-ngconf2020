@@ -34,39 +34,39 @@ export class BooksApiEffects {
 
   loadBooks$ = createEffect(() =>
     this.actions$.pipe(
-      onEvent(BooksEventTypes.enter),
+      onEvent(BooksEventTypes.entered),
       exhaustMap(() =>
-        this.booksService.all().pipe(map((books) => booksLoaded({ books })))
+        this.booksService.all().pipe(map(books => booksLoaded({ books })))
       )
     )
   );
 
   createBook$ = createEffect(() =>
     this.actions$.pipe(
-      onEvent(BooksEventTypes.createBook),
-      concatMap((action) =>
+      onEvent(BooksEventTypes.bookCreated),
+      concatMap(action =>
         this.booksService
           .create(action.book)
-          .pipe(map((book) => bookCreated({ book })))
+          .pipe(map(book => bookCreated({ book })))
       )
     )
   );
 
   updateBook$ = createEffect(() =>
     this.actions$.pipe(
-      onEvent(BooksEventTypes.updateBook),
-      concatMap((action) =>
+      onEvent(BooksEventTypes.bookUpdated),
+      concatMap(action =>
         this.booksService
           .update(action.bookId, action.changes)
-          .pipe(map((book) => bookUpdated({ book })))
+          .pipe(map(book => bookUpdated({ book })))
       )
     )
   );
 
   deleteBook$ = createEffect(() =>
     this.actions$.pipe(
-      onEvent(BooksEventTypes.deleteBook),
-      mergeMap((action) =>
+      onEvent(BooksEventTypes.bookDeleted),
+      mergeMap(action =>
         this.booksService
           .delete(action.bookId)
           .pipe(map(() => bookDeleted({ bookId: action.bookId })))

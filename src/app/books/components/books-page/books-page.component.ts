@@ -30,11 +30,11 @@ export class BooksPageComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store.dispatch(BOOKS_PAGE, BooksEventTypes.enter);
+    this.store.dispatch(BOOKS_PAGE, BooksEventTypes.entered);
   }
 
   onSelect(book: BookModel) {
-    this.store.dispatch(BOOKS_PAGE, BooksEventTypes.selectBook, {
+    this.store.dispatch(BOOKS_PAGE, BooksEventTypes.bookSelected, {
       bookId: book.id,
     });
   }
@@ -44,7 +44,7 @@ export class BooksPageComponent implements OnInit {
   }
 
   removeSelectedBook() {
-    this.store.dispatch(BOOKS_PAGE, BooksEventTypes.clearSelectedBook);
+    this.store.dispatch(BOOKS_PAGE, BooksEventTypes.selectedBookCleared);
   }
 
   onSave(book: BookRequiredProps | BookModel) {
@@ -56,20 +56,20 @@ export class BooksPageComponent implements OnInit {
   }
 
   saveBook(bookProps: BookRequiredProps) {
-    this.store.dispatch(BOOKS_PAGE, BooksEventTypes.createBook, {
+    this.store.dispatch(BOOKS_PAGE, BooksEventTypes.bookCreated, {
       book: bookProps,
     });
   }
 
   updateBook(book: BookModel) {
-    this.store.dispatch(BOOKS_PAGE, BooksEventTypes.updateBook, {
+    this.store.dispatch(BOOKS_PAGE, BooksEventTypes.bookUpdated, {
       bookId: book.id,
       changes: book,
     });
   }
 
   onDelete(book: BookModel) {
-    this.store.dispatch(BOOKS_PAGE, BooksEventTypes.deleteBook, {
+    this.store.dispatch(BOOKS_PAGE, BooksEventTypes.bookDeleted, {
       bookId: book.id,
     });
   }

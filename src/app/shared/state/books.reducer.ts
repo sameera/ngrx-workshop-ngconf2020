@@ -16,7 +16,7 @@ export const initialState = adapter.getInitialState({
 
 export const booksReducer = createEventReducer(
   initialState,
-  when(BooksEventTypes.selectBook, (state, action) => {
+  when(BooksEventTypes.bookSelected, (state, action) => {
     return {
       ...state,
       activeBookId: action.bookId,
@@ -24,12 +24,15 @@ export const booksReducer = createEventReducer(
   }),
   // Note: This could have been merged in to one by writin up our createEventReducer to support multiple
   // event params to match the original ngrx style. I was lazy and implemented it to take an array
-  when([BooksEventTypes.clearSelectedBook, BooksEventTypes.enter], state => {
-    return {
-      ...state,
-      activeBookId: null,
-    } as State;
-  }),
+  when(
+    [BooksEventTypes.selectedBookCleared, BooksEventTypes.entered],
+    state => {
+      return {
+        ...state,
+        activeBookId: null,
+      } as State;
+    }
+  ),
   when(BooksApiEventTypes.booksLoadedSuccess, (state, action) => {
     return adapter.addAll(
       action.books,
